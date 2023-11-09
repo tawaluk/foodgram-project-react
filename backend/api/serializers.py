@@ -15,7 +15,6 @@ from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
 from users.models import Fallow, UserFoodgram
 
 
-
 class WriteUserFoodgramCreateSerializer(UserCreateSerializer):
     class Meta:
         model = UserFoodgram

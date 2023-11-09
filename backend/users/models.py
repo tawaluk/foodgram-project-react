@@ -41,7 +41,7 @@ class UserFoodgram(AbstractUser):
 
     class Meta:
         """Метамодель для модели UserFoodgram"""
-        ordering = ['username',]
+        ordering = ['username']
         verbose_name = 'пользователь'
         verbose_name_plural = 'пользователи'
 

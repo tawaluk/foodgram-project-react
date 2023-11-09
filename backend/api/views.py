@@ -30,7 +30,7 @@ class TagsViewSet(viewsets.ReadOnlyModelViewSet):
     """Вью дял тегов.
     Через АПИ требуются только GET запросы."""
     queryset = Tag.objects.all()
-    permission_classes = [AllowAny,]
+    permission_classes = [AllowAny]
     serializer_class = TagSerializer
 
 
@@ -38,7 +38,7 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     """Вьюха дял Ingredient.
     Через АПИ требуются только GET запросы."""
     queryset = Ingredient.objects.all()
-    permission_classes = [AllowAny,]
+    permission_classes = [AllowAny]
     serializer_class = IngredientSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = IngredientFilter
@@ -47,7 +47,7 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели рецепта."""
     queryset = Recipe.objects.all()
-    permission_classes = [AuthorOrStaffOrReadOnly,]
+    permission_classes = [AuthorOrStaffOrReadOnly]
     pagination_class = CustomPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
@@ -132,7 +132,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=False,
             methods=['get'],
-            permission_classes=[AllowAny,],
+            permission_classes=[AllowAny],
             )
     def download_shopping_cart(self, request):
         """Метод для скачивания списка покупок."""
@@ -168,7 +168,7 @@ class CustomUserViewSet(UserViewSet):
     queryset = UserFoodgram.objects.all()
     serializer_class = ReadUserFoodgramSerializer
     pagination_class = LimitOffsetPagination
-    permission_classes = [AllowAny,]
+    permission_classes = [AllowAny]
 
     @action(
         detail=True,
