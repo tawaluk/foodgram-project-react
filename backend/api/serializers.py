@@ -15,7 +15,7 @@ from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
 from users.models import Fallow, UserFoodgram
 
 
-############### users ###############
+
 class WriteUserFoodgramCreateSerializer(UserCreateSerializer):
     class Meta:
         model = UserFoodgram
@@ -51,9 +51,6 @@ class ReadUserFoodgramSerializer(UserSerializer):
         if user.is_authenticated and instance == user:
             return super().to_representation(instance)
         return super().to_representation(instance)
-
-
-############### recipes ###############
 
 
 class Base64ImageField(ImageField):
@@ -180,8 +177,8 @@ class RecipeWriteSerializer(ModelSerializer):
         for item in value:
             try:
                 ingredient = Ingredient.objects.get(id=item['id'])
-            except:
-                raise ValidationError("Ингридиент не существует!")
+            except ValidationError:
+                raise ("Ингридиент не существует!")
             if ingredient in ingredients_list:
                 raise ValidationError({
                     'ingredients': 'Ингридиенты не должны повторяться!'

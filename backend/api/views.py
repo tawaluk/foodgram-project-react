@@ -8,7 +8,9 @@ from djoser.views import UserViewSet
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import (
+    AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
+)
 from rest_framework.response import Response
 
 from recipes.models import (Favorites, Ingredient, IngredientInRecipe, Recipe,
@@ -191,8 +193,9 @@ class CustomUserViewSet(UserViewSet):
 
         if request.method == 'DELETE':
             subscription = Fallow.objects.filter(
-                                             user=user,
-                                             author=author)
+                user=user,
+                author=author
+            )
             if subscription.exists():
                 subscription.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
