@@ -10,7 +10,7 @@ SECRET_KEY = 'django-insecure-a2o85^^_u*w%6v8jlscory(xx)(mc=68ax)$)kdqs0cdn7uvnd
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0']
 
 AUTH_USER_MODEL = 'users.UserFoodgram'
 
@@ -66,10 +66,10 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'kittygram'),
-        'USER': os.getenv('POSTGRES_USER', 'kittygram_user'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'kittygram_password'),
-        'HOST': os.getenv('DB_HOST', 'kittygram'),
+        'NAME': os.getenv('POSTGRES_DB', 'postgres'),
+        'USER': os.getenv('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
+        'HOST': os.getenv('DB_HOST', '172.19.0.2'),
         'DB_PORT': os.getenv('DB_PORT', '5432'),
     }
 }
