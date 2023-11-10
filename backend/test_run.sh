@@ -1,4 +1,4 @@
 #!/bin/sh
 python3 manage.py makemigrations
 python3 manage.py migrate
-gunicorn -b 0:8000 backend.wsgi;
+python3 manage.py runserver 0.0.0.0:8000
