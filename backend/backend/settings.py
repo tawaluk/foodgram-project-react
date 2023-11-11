@@ -1,13 +1,17 @@
-from pathlib import Path
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
 load_dotenv()
-
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = 'django-insecure-a2o85^^_u*w%6v8jlscory(xx)(mc=68ax)$)kdqs0cdn7uvnd'
-DEBUG = False
+
+SECRET_KEY = os.getenv(
+    'SECRET_KEY',
+     default='django-insecure-a2o85^^_u*w%6v8jlscory(xx)(mc=68ax)$)kdqs0cdn7uvnd')
+
+DEBUG = os.getenv('DEBUG', default='False') == 'True'
+
 ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'users.UserFoodgram'
@@ -61,30 +65,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('POSTGRES_DB', 'postgres'),
-            'USER': os.getenv('POSTGRES_USER', 'postgres'),
-            'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
-            'HOST': os.getenv('DB_HOST', '172.19.0.2'),
-            'DB_PORT': os.getenv('DB_PORT', '5432'),
-        }
-    }
 
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('POSTGRES_DB', 'postgres'),
-            'USER': os.getenv('POSTGRES_USER', 'postgres'),
-            'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
-            'HOST': os.getenv('DB_HOST', '172.19.0.2'),
-            'DB_PORT': os.getenv('DB_PORT', '5432'),
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'postgres'),
+        'USER': os.getenv('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
+        'HOST': os.getenv('DB_HOST', '172.19.0.2'),
+        'DB_PORT': os.getenv('DB_PORT', '5432'),
     }
-
+}
 
 
 AUTH_PASSWORD_VALIDATORS = [

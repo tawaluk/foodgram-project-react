@@ -3,5 +3,5 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt --no-cache-dir
 COPY . .
-RUN chmod +x test_run.sh
-CMD ["./test_run.sh"]
+RUN chmod +x run_server.sh
+CMD ["./run_server.sh"]

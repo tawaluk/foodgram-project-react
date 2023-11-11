@@ -8,9 +8,8 @@ from djoser.views import UserViewSet
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import (
-    AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
-)
+from rest_framework.permissions import (AllowAny, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
 from recipes.models import (Favorites, Ingredient, IngredientInRecipe, Recipe,
@@ -19,11 +18,11 @@ from users.models import Fallow, UserFoodgram
 
 from .filters import IngredientFilter, RecipeFilter
 from .paginators import CustomPagination
-from .permissions import (SAFE_METHODS, AuthorOrStaffOrReadOnly)
-from .serializers import (ReadUserFoodgramSerializer, FallowFoodgramSerializer,
-                          IngredientSerializer, ReadRecipeSerializer,
+from .permissions import SAFE_METHODS, AuthorOrStaffOrReadOnly
+from .serializers import (FallowFoodgramSerializer, IngredientSerializer,
+                          ReadRecipeSerializer, ReadUserFoodgramSerializer,
                           RecipeShortSerializer, RecipeWriteSerializer,
-                          TagSerializer, )
+                          TagSerializer)
 
 
 class TagsViewSet(viewsets.ReadOnlyModelViewSet):
