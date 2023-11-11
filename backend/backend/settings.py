@@ -12,7 +12,7 @@ SECRET_KEY = os.getenv(
 
 DEBUG = os.getenv('DEBUG', default='False') == 'True'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='*')
 
 AUTH_USER_MODEL = 'users.UserFoodgram'
 
