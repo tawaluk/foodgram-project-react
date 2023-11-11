@@ -1,4 +1,2 @@
-FROM ubuntu:latest
-LABEL authors="tawaluk"
-
-ENTRYPOINT ["top", "-b"]
+FROM nginx:1.19.3
+COPY nginx.conf /etc/nginx/templates/default.conf.template
