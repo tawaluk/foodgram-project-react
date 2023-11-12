@@ -1,0 +1,30 @@
+======================
+
+host:
+workexampletavalyuk2.ru
+51.250.101.224
+
+======================
+
+Админ:
+логин - admin
+почта - admin@admin.ru
+пароль - 1admintest
+
+======================
+
+Пример env:
+
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=postgres
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+DB_HOST=db
+DB_PORT=5432
+SECRET_KEY=django-insecure-a2o85^^_u*w%6v8jlscory(xx)(mc=68ax)$)kdqs0cdn7uvnd
+DEBUG=False
+ALLOWED_HOSTS=127.0.0.1 localhost workexampletavalyuk2.ru 51.250.101.224
+
+======================
+
+PS: тесты постмана проект проходит.
