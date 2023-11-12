@@ -12,7 +12,7 @@ SECRET_KEY = os.getenv(
 
 DEBUG = False
 
-CSRF_TRUSTED_ORIGINS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(' ')
+CSRF_TRUSTED_ORIGINS = ['https://workexampletavalyuk.ru']
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(' ')
 
