@@ -12,7 +12,8 @@ SECRET_KEY = os.getenv(
 
 DEBUG = False
 
-CSRF_TRUSTED_ORIGINS = ['https://workexampletavalyuk.ru']
+CSRF_TRUSTED_ORIGINS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(' ')
+
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(' ')
 
 AUTH_USER_MODEL = 'users.UserFoodgram'
