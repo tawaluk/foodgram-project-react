@@ -30,8 +30,9 @@ services:
       - db
       - backend
     image: tawaluk/foodgram_frontend
+    command: cp -r /app/build/. /frontend_static/
     volumes:
-      - static:/app/result_build/
+      - static:/frontend_static
 
   nginx:
     container_name: nginx_food
