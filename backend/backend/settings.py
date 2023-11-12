@@ -13,6 +13,8 @@ SECRET_KEY = os.getenv(
 DEBUG = True
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'workexampletavalyuk2.ru', '51.250.101.224']
 
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(' ')
+
 AUTH_USER_MODEL = 'users.UserFoodgram'
 INSTALLED_APPS = [
     'django.contrib.admin',
