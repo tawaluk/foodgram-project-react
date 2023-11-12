@@ -11,7 +11,7 @@ SECRET_KEY = os.getenv(
     default='django-insecure-a2o85^^_u*w%6v8jlscory(xx)(mc=68ax)$)kdqs0cdn7uvnd')
 
 DEBUG = True
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'workexampletavalyuk2.ru', '51.250.101.224']
 
 AUTH_USER_MODEL = 'users.UserFoodgram'
 INSTALLED_APPS = [
