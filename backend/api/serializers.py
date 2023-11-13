@@ -176,16 +176,15 @@ class RecipeWriteSerializer(ModelSerializer):
             "cooking_time",
         )
 
+    # noqa
     def validate(self, obj):
         ingredients_list = []
         required_fields = ["name", "text", "cooking_time"]
         for field in required_fields:
             if not obj.get(field):
                 raise ValidationError(f"{field} - Обязательное поле.")
-
         if not obj.get("tags"):
             raise ValidationError("Нужно указать минимум 1 тег.")
-
         if not obj.get("ingredients"):
             raise ValidationError("Нужно указать минимум 1 ингредиент.")
 
@@ -194,30 +193,24 @@ class RecipeWriteSerializer(ModelSerializer):
 
         if len(ingredient_id_list) != len(unique_ingredient_id_list):
             raise ValidationError("Ингредиенты должны быть уникальны.")
-
         for item in obj.get("ingredients"):
             ingredient_id = item["id"]
             ingredient_amount = int(item["amount"])
-
             try:
                 ingredient = Ingredient.objects.get(id=ingredient_id)
             except Ingredient.DoesNotExist:
                 raise ValidationError(
                     f"Ингредиент с id {ingredient_id} не существует!"
                 )
-
             if ingredient in ingredients_list:
                 raise ValidationError(
                     f"Ингредиент {ingredient} не должен повторяться!"
                 )
-
             if ingredient_amount <= 0:
                 raise ValidationError(
                     f"Ингредиента {ingredient} должно быть больше 0!"
                 )
-
             ingredients_list.append(ingredient)
-
         return obj
 
     @staticmethod
