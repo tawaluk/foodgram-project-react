@@ -1,4 +1,5 @@
 from django_filters import rest_framework as filters
+
 from recipes.models import Ingredient, Recipe, Tag
 
 
@@ -24,13 +25,11 @@ class RecipeFilter(filters.FilterSet):
         if value:
             user = self.request.user
             return queryset.filter(favorited__user=user.id)
-            # return queryset.filter(favorited__user_id=user.id)
 
     def is_recipe_in_shoppingcart_filter(self, queryset, name, value):
         if value:
             user = self.request.user
             return queryset.filter(shopping_cart__user=user.id)
-            # return queryset.filter(shopping_cart__user_id=user.id)
         return queryset
 
     class Meta:

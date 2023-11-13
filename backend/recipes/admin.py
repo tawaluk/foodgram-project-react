@@ -1,4 +1,5 @@
-from django.contrib.admin import ModelAdmin, register
+from django.contrib.admin import ModelAdmin, TabularInline, register
+from django.utils.translation import gettext_lazy as _
 
 from .models import (Favorites, Ingredient, IngredientInRecipe, Recipe,
                      ShopCart, Tag, TagInRecipe)
@@ -17,12 +18,25 @@ class TagAdmin(ModelAdmin):
     list_display = ('pk', 'name', 'color', 'slug',)
 
 
+class RecipeIngredientsInline(TabularInline):
+    model = IngredientInRecipe
+    min_num = 1
+    extra = 1
+
+
 @register(Recipe)
 class RecipeAdmin(ModelAdmin):
     """Настройка полей модели Recipe в админке"""
-    list_display = ('pk', 'author', 'name')
+    list_display = ('pk', 'author', 'name', 'favorited',)
     list_filter = ('author', 'name', 'tags')
     search_fields = ('author', 'name', 'tags')
+    inlines = (RecipeIngredientsInline,)
+    readonly_fields = ('favorited',)
+
+    def favorited(self, obj):
+        return obj.favorited.all().count()
+
+    favorited.short_description = _('Количество добавлений в избранное')
 
 
 @register(ShopCart)
