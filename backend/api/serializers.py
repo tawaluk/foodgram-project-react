@@ -1,23 +1,20 @@
 import base64
 import datetime
 
-from django.http import HttpResponse
 from django.core.files.base import ContentFile
 from django.db import transaction
 from django.db.models import Sum
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
+from recipes.models import (Ingredient, IngredientInRecipe, Recipe, ShopCart,
+                            Tag)
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
-from rest_framework.serializers import (
-    ImageField, ModelSerializer, ReadOnlyField
-)
-
-from recipes.models import (
-    Ingredient, IngredientInRecipe, Recipe, Tag, ShopCart
-)
+from rest_framework.serializers import (ImageField, ModelSerializer,
+                                        ReadOnlyField)
 from users.models import Fallow, UserFoodgram
 
 
