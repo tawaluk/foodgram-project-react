@@ -196,13 +196,19 @@ class RecipeWriteSerializer(ModelSerializer):
             try:
                 ingredient = Ingredient.objects.get(id=ingredient_id)
             except Ingredient.DoesNotExist:
-                raise ValidationError(f"Ингредиент с id {ingredient_id} не существует!")
+                raise ValidationError(
+                    f"Ингредиент с id {ingredient_id} не существует!"
+                )
 
             if ingredient in ingredients_list:
-                raise ValidationError(f"Ингредиент {ingredient} не должен повторяться!")
+                raise ValidationError(
+                    f"Ингредиент {ingredient} не должен повторяться!"
+                )
 
             if ingredient_amount <= 0:
-                raise ValidationError(f"Ингредиенту {ingredient} должно быть указано количество больше 0!")
+                raise ValidationError(
+                    f"Ингредиента {ingredient} должно быть больше 0!"
+                )
 
             ingredients_list.append(ingredient)
 
@@ -223,14 +229,21 @@ class RecipeWriteSerializer(ModelSerializer):
 
     @transaction.atomic
     def create_ingredients(self, ingredients, recipe):
-        """Метод создания ингредиента."""
+        ingredient_ids = [element['id'] for element in ingredients]
+        existing_ingredients = Ingredient.objects.filter(pk__in=ingredient_ids)
+        existing_ingredient_ids = set(existing_ingredients.values_list('pk', flat=True))
+        if len(existing_ingredient_ids) != len(ingredient_ids):
+            raise ValidationError('Некоторые ингредиенты не существуют!')
+        ingredients_to_create = []
         for element in ingredients:
-            id = element['id']
-            ingredient = Ingredient.objects.get(pk=id)
+            ingredient_id = element['id']
             amount = element['amount']
-            IngredientInRecipe.objects.create(
-                ingredient=ingredient, recipe=recipe, amount=amount
+            if ingredient_id not in existing_ingredient_ids:
+                raise ValidationError(f"Ингредиент с id {ingredient_id} не существует!")
+            ingredients_to_create.append(
+                IngredientInRecipe(ingredient_id=ingredient_id, recipe=recipe, amount=amount)
             )
+        IngredientInRecipe.objects.bulk_create(ingredients_to_create)
 
     @staticmethod
     def create_tags(tags, recipe):
