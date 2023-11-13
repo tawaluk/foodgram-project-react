@@ -1,19 +1,16 @@
-import datetime
-
-from django.db.models import Sum
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from recipes.models import (Favorites, Ingredient, IngredientInRecipe, Recipe,
-                            ShopCart, Tag)
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
+
 from users.models import Fallow, UserFoodgram
+from recipes.models import (Favorites, Ingredient, Recipe,
+                            ShopCart, Tag)
 
 from .filters import IngredientFilter, RecipeFilter
 from .paginators import CustomPagination
@@ -21,7 +18,7 @@ from .permissions import SAFE_METHODS, AuthorOrStaffOrReadOnly
 from .serializers import (FallowFoodgramSerializer, IngredientSerializer,
                           ReadRecipeSerializer, ReadUserFoodgramSerializer,
                           RecipeShortSerializer, RecipeWriteSerializer,
-                          TagSerializer)
+                          TagSerializer, ShoppingCartSerializer)
 
 
 class TagsViewSet(viewsets.ReadOnlyModelViewSet):
@@ -52,7 +49,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         """Роутинг сериализаторов исходя из действий."""
-        if self.action in (SAFE_METHODS or ['retrieve', 'list']):
+        if self.action in (SAFE_METHODS or ["retrieve", "list"]):
             return ReadRecipeSerializer
         return RecipeWriteSerializer
 
@@ -74,38 +71,36 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=True,
-        methods=['post', 'delete'],
+        methods=["post", "delete"],
         permission_classes=[IsAuthenticatedOrReadOnly],
     )
     def favorite(self, request, pk):
         """Выбор метода для списка избранного."""
-        if request.method == 'POST':
+        if request.method == "POST":
             return self.add_to_target(Favorites, request.user, pk)
-        else:
-            return self.delete_from_target(Favorites, request.user, pk)
+        return self.delete_from_target(Favorites, request.user, pk)
 
     @action(
         detail=True,
-        methods=['post', 'delete'],
+        methods=["post", "delete"],
         permission_classes=[IsAuthenticatedOrReadOnly],
     )
     def shopping_cart(self, request, pk):
         """Выбор метода для списка покупок."""
-        if request.method == 'POST':
+        if request.method == "POST":
             return self.add_to_target(ShopCart, request.user, pk)
-        else:
-            return self.delete_from_target(ShopCart, request.user, pk)
+        return self.delete_from_target(ShopCart, request.user, pk)
 
     @staticmethod
     def add_to_target(model, user, pk):
         if model.objects.filter(user=user, recipe__id=pk).exists():
-            return Response({'errors': 'Рецепт уже добавлен!'},
+            return Response({"errors": "Рецепт уже добавлен!"},
                             status=status.HTTP_400_BAD_REQUEST)
         try:
             recipe = Recipe.objects.get(id=pk)
         except Recipe.DoesNotExist:
             return Response(
-                data={'errors': 'Рецепт не существует!'},
+                data={"errors": "Рецепт не существует!"},
                 status=status.HTTP_400_BAD_REQUEST
             )
         model.objects.create(user=user, recipe=recipe)
@@ -118,47 +113,25 @@ class RecipeViewSet(viewsets.ModelViewSet):
             Recipe.objects.get(id=pk)
         except Recipe.DoesNotExist:
             return Response(
-                data={'errors': 'Рецепт не существует!'},
+                data={"errors": "Рецепт не существует!"},
                 status=status.HTTP_404_NOT_FOUND
             )
         obj = model.objects.filter(user=user, recipe__id=pk)
         if obj.exists():
             obj.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response({'errors': 'Рецепт не существует!'},
+        return Response({"errors": "Рецепт не существует!"},
                         status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False,
-            methods=['get'],
-            permission_classes=[AllowAny],
-            )
-    def download_shopping_cart(self, request):
-        """Метод для скачивания списка покупок."""
-        user = request.user
-        ingredients = IngredientInRecipe.objects.filter(
-            recipe__shopping_cart__user=request.user
-        ).values(
-            'ingredient__name',
-            'ingredient__measurement_unit'
-        ).annotate(amount=Sum('amount'))
-        today = datetime.datetime.today()
-        shopping_list = (
-            f'Список покупок: {user.get_full_name()}\n\n'
-            f'Дата: {today:%Y-%m-%d}\n\n'
-        )
-        shopping_list += '\n'.join([
-            f'- {ingredient["ingredient__name"]} '
-            f'({ingredient["ingredient__measurement_unit"]})'
-            f' - {ingredient["amount"]}'
-            for ingredient in ingredients
-        ])
-        shopping_list += f'\n\nFoodgram ({today:%Y})'
-        filename = f'{user.username}_shopping_list.txt'
-        response = HttpResponse(
-            shopping_list, content_type='text.txt; charset=utf-8'
-        )
-        response['Content-Disposition'] = f'attachment; filename={filename}'
-        return response
+    @action(
+        detail=False,
+        methods=["get"],
+        permission_classes=[AllowAny],
+    )
+    def download(self, request):
+        shopping_cart = ShoppingCartSerializer()
+        get_shopping_cart = shopping_cart.download_shopping_cart(request.user)
+        return get_shopping_cart
 
 
 class CustomUserViewSet(UserViewSet):
@@ -170,26 +143,26 @@ class CustomUserViewSet(UserViewSet):
 
     @action(
         detail=True,
-        methods=['post', 'delete'],
+        methods=["post", "delete"],
         permission_classes=[IsAuthenticated]
     )
     def subscribe(self, request, **kwargs):
         """Подписка и отписка от автора."""
         user = request.user
-        author_id = self.kwargs.get('id')
+        author_id = self.kwargs.get("id")
         author = get_object_or_404(UserFoodgram, id=author_id)
 
-        if request.method == 'POST':
+        if request.method == "POST":
             serializer = FallowFoodgramSerializer(
                 author,
                 data=request.data,
-                context={'request': request}
+                context={"request": request}
             )
             serializer.is_valid(raise_exception=True)
             Fallow.objects.create(user=user, author=author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        if request.method == 'DELETE':
+        if request.method == "DELETE":
             subscription = Fallow.objects.filter(
                 user=user,
                 author=author
@@ -197,7 +170,7 @@ class CustomUserViewSet(UserViewSet):
             if subscription.exists():
                 subscription.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response({'errors': 'Такой подписки не существует!'},
+            return Response({"errors": "Такой подписки не существует!"},
                             status=status.HTTP_400_BAD_REQUEST)
 
     @action(
@@ -211,5 +184,5 @@ class CustomUserViewSet(UserViewSet):
         pages = self.paginate_queryset(queryset)
         serializer = FallowFoodgramSerializer(pages,
                                               many=True,
-                                              context={'request': request})
+                                              context={"request": request})
         return self.get_paginated_response(serializer.data)
