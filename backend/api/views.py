@@ -23,6 +23,7 @@ from .serializers import (FallowFoodgramSerializer, IngredientSerializer,
 class TagsViewSet(viewsets.ReadOnlyModelViewSet):
     """Вью дял тегов.
     Через АПИ требуются только GET запросы."""
+
     queryset = Tag.objects.all()
     permission_classes = [AllowAny]
     serializer_class = TagSerializer
@@ -31,6 +32,7 @@ class TagsViewSet(viewsets.ReadOnlyModelViewSet):
 class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     """Вьюха дял Ingredient.
     Через АПИ требуются только GET запросы."""
+
     queryset = Ingredient.objects.all()
     permission_classes = [AllowAny]
     serializer_class = IngredientSerializer
@@ -40,6 +42,7 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели рецепта."""
+
     queryset = Recipe.objects.all()
     permission_classes = [AuthorOrStaffOrReadOnly]
     pagination_class = CustomPagination
@@ -48,12 +51,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         """Роутинг сериализаторов исходя из действий."""
+
         if self.action in (SAFE_METHODS or ["retrieve", "list"]):
             return ReadRecipeSerializer
         return RecipeWriteSerializer
 
     def partial_update(self, request, *args, **kwargs):
         """Явно переопределяю. Нужно для тестов."""
+
         instance = self.get_object()
         if instance.author != request.user:
             return Response(
@@ -135,6 +140,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
 class CustomUserViewSet(UserViewSet):
     """Вьюсет для кастомной модели пользователя."""
+
     queryset = UserFoodgram.objects.all()
     serializer_class = ReadUserFoodgramSerializer
     pagination_class = LimitOffsetPagination

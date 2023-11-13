@@ -20,6 +20,7 @@ from users.models import Fallow, UserFoodgram
 
 
 class WriteUserFoodgramCreateSerializer(UserCreateSerializer):
+
     class Meta:
         model = UserFoodgram
         fields = ("email", "id", "username", "first_name",
@@ -28,6 +29,7 @@ class WriteUserFoodgramCreateSerializer(UserCreateSerializer):
 
 class ReadUserFoodgramSerializer(UserSerializer):
     """Чтение обьектов из модели через API."""
+
     is_subscribed = SerializerMethodField(read_only=True)
 
     class Meta:
@@ -49,6 +51,7 @@ class ReadUserFoodgramSerializer(UserSerializer):
 
     def to_representation(self, instance):
         """Метод для представления сериализованных данных."""
+
         return super().to_representation(instance)
 
 
@@ -57,6 +60,7 @@ class Base64ImageField(ImageField):
 
     def to_internal_value(self, data):
         """Метод преобразования картинки."""
+
         if isinstance(data, str) and data.startswith("data:image"):
             format_value, imgstr = data.split(";base64,")
             ext = format_value.split("/")[-1]
@@ -112,6 +116,7 @@ class ReadIngredientsInRecipeSerializer(ModelSerializer):
 
 class ReadRecipeSerializer(ModelSerializer):
     """Чтение обьектов из модели через API."""
+
     tags = TagSerializer(many=True, read_only=True)
     author = ReadUserFoodgramSerializer(read_only=True)
     ingredients = ReadIngredientsInRecipeSerializer(
@@ -152,7 +157,7 @@ class ReadRecipeSerializer(ModelSerializer):
 
 
 class RecipeWriteSerializer(ModelSerializer):
-    """Модель моей боли."""
+
     tags = PrimaryKeyRelatedField(queryset=Tag.objects.all(), many=True)
     ingredients = IngredientInRecipeWriteSerializer(many=True)
     image = Base64ImageField()
@@ -313,6 +318,7 @@ class RecipeWriteSerializer(ModelSerializer):
 
 class RecipeShortSerializer(ModelSerializer):
     """Вспомогательный сериализатор для необходимого вывода."""
+
     image = Base64ImageField()
 
     class Meta:
@@ -326,6 +332,7 @@ class RecipeShortSerializer(ModelSerializer):
 
 
 class SubscribeFoodgramSerializer(ReadUserFoodgramSerializer):
+
     recipes_count = SerializerMethodField()
     recipes = SerializerMethodField()
 
@@ -365,6 +372,7 @@ class SubscribeFoodgramSerializer(ReadUserFoodgramSerializer):
 
 
 class FallowFoodgramSerializer(ReadUserFoodgramSerializer):
+
     recipes_count = SerializerMethodField()
     recipes = SerializerMethodField()
 
@@ -404,6 +412,7 @@ class FallowFoodgramSerializer(ReadUserFoodgramSerializer):
 
 
 class ShoppingCartSerializer(ModelSerializer):
+
     class Meta:
         model = ShopCart
         fields = ("user", "recipe")
