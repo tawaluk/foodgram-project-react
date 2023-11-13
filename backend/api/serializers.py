@@ -53,6 +53,7 @@ class ReadUserFoodgramSerializer(UserSerializer):
 
 class Base64ImageField(ImageField):
     """Кодирование изображения в base64."""
+
     def to_internal_value(self, data):
         """Метод преобразования картинки"""
         if isinstance(data, str) and data.startswith('data:image'):
@@ -169,45 +170,42 @@ class RecipeWriteSerializer(ModelSerializer):
             'cooking_time',
         )
 
-    @staticmethod
-    def validate_ingredients(value):
-        ingredients_list = []
-        for item in value:
-            try:
-                ingredient = Ingredient.objects.get(id=item['id'])
-            except ValidationError:
-                raise ("Ингридиент не существует!")
-            if ingredient in ingredients_list:
-                raise ValidationError({
-                    'ingredients': 'Ингридиенты не должны повторяться!'
-                })
-            if int(item['amount']) <= 0:
-                raise ValidationError({
-                    'amount': 'Количество ингредиента должно быть не меньше 1!'
-                })
-            ingredients_list.append(ingredient)
-        return value
-
     def validate(self, obj):
-        for field in ['name', 'text', 'cooking_time']:
+        ingredients_list = []
+        required_fields = ['name', 'text', 'cooking_time']
+        for field in required_fields:
             if not obj.get(field):
-                raise ValidationError(
-                    f'{field} - Обязательное поле.'
-                )
+                raise ValidationError(f'{field} - Обязательное поле.')
+
         if not obj.get('tags'):
-            raise ValidationError(
-                'Нужно указать минимум 1 тег.'
-            )
+            raise ValidationError('Нужно указать минимум 1 тег.')
+
         if not obj.get('ingredients'):
-            raise ValidationError(
-                'Нужно указать минимум 1 ингредиент.'
-            )
+            raise ValidationError('Нужно указать минимум 1 ингредиент.')
+
         ingredient_id_list = [item['id'] for item in obj.get('ingredients')]
         unique_ingredient_id_list = set(ingredient_id_list)
+
         if len(ingredient_id_list) != len(unique_ingredient_id_list):
-            raise ValidationError(
-                'Ингредиенты должны быть уникальны.'
-            )
+            raise ValidationError('Ингредиенты должны быть уникальны.')
+
+        for item in obj.get('ingredients'):
+            ingredient_id = item['id']
+            ingredient_amount = int(item['amount'])
+
+            try:
+                ingredient = Ingredient.objects.get(id=ingredient_id)
+            except Ingredient.DoesNotExist:
+                raise ValidationError(f"Ингредиент с id {ingredient_id} не существует!")
+
+            if ingredient in ingredients_list:
+                raise ValidationError(f"Ингредиент {ingredient} не должен повторяться!")
+
+            if ingredient_amount <= 0:
+                raise ValidationError(f"Ингредиенту {ingredient} должно быть указано количество больше 0!")
+
+            ingredients_list.append(ingredient)
+
         return obj
 
     @staticmethod
@@ -223,9 +221,9 @@ class RecipeWriteSerializer(ModelSerializer):
             })
         return value
 
-    @staticmethod
-    def create_ingredients(ingredients, recipe):
-        """Метод создания ингредиента"""
+    @transaction.atomic
+    def create_ingredients(self, ingredients, recipe):
+        """Метод создания ингредиента."""
         for element in ingredients:
             id = element['id']
             ingredient = Ingredient.objects.get(pk=id)
@@ -236,12 +234,11 @@ class RecipeWriteSerializer(ModelSerializer):
 
     @staticmethod
     def create_tags(tags, recipe):
-        """Метод добавления тега"""
+        """Метод добавления тега."""
         recipe.tags.set(tags)
 
     def create(self, validated_data):
-        """Метод создания модели"""
-        # print(f'ВСЕ ДААНЫЕ {validated_data}')
+        """Метод создания модели."""
         ingredients = validated_data.pop('ingredients')
         user = self.context.get('request').user
         tags = validated_data.pop('tags')
