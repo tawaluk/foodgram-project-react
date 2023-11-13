@@ -124,9 +124,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         detail=False,
         methods=["get"],
-        permission_classes=[AllowAny],
+        permission_classes=[IsAuthenticated],
     )
-    def download(self, request):
+    def download_shopping_cart(self, request):
         shopping_cart = ShoppingCartSerializer()
         get_shopping_cart = shopping_cart.download_shopping_cart(request.user)
         return get_shopping_cart

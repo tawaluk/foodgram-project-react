@@ -47,11 +47,7 @@ class ReadUserFoodgramSerializer(UserSerializer):
         return Fallow.objects.filter(user=user, author=author).exists()
 
     def to_representation(self, instance):
-        """Метод для представления сериализованных данных"""
-
-        user = self.context.get('request').user
-        if user.is_authenticated and instance == user:
-            return super().to_representation(instance)
+        """Метод для представления сериализованных данных."""
         return super().to_representation(instance)
 
 
@@ -396,7 +392,7 @@ class ShoppingCartSerializer(ModelSerializer):
         fields = '__all__'
 
     @staticmethod
-    def download_shopping_cart(self, user):
+    def download_shopping_cart(user):
         ingredients = IngredientInRecipe.objects.filter(
             recipe__shopping_cart__user=user
         ).values(
