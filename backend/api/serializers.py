@@ -178,6 +178,8 @@ class RecipeWriteSerializer(ModelSerializer):
 
     # noqa
     def validate(self, obj):
+    # noqa
+        # noqa
         ingredients_list = []
         required_fields = ["name", "text", "cooking_time"]
         for field in required_fields:
