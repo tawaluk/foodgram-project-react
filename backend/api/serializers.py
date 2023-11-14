@@ -276,7 +276,8 @@ class RecipeWriteSerializer(ModelSerializer):
             )
             recipe.ingredients.add(ing.id)
 
-    def tags_and_ingredients_set(self, recipe, tags, ingredients):
+    @staticmethod
+    def tags_and_ingredients_set(recipe, tags, ingredients):
         recipe.tags.set(tags)
         IngredientInRecipe.objects.bulk_create(
             [IngredientInRecipe(
@@ -288,14 +289,22 @@ class RecipeWriteSerializer(ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
+        """Если опять не так, то пажалуйста объясни,
+        я отказался от избыточных запросов, но отказаться от
+        строчек с тэгом и ингредиентом не могу,
+        т.к. без переопределения update()
+        или переписывания tags_and_ingredients_set,
+         это не получается сделать/не знаю как."""
         tags = validated_data.pop("tags")
         ingredients = validated_data.pop("ingredients")
         instance = super().update(instance, validated_data)
+        instance.ingredients.clear()
         self.tags_and_ingredients_set(instance, tags, ingredients)
-        return super().update(instance, validated_data)
+        return instance
 
     def to_representation(self, instance):
         return ReadRecipeSerializer(instance, context=self.context).data
+
 
 class RecipeShortSerializer(ModelSerializer):
     """Вспомогательный сериализатор для необходимого вывода."""
