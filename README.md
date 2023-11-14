@@ -126,7 +126,7 @@ frontend
 
 Проверьте, выполнили ли Вы сбор статики?  
 
-    python3 manage.py collectstatic
+    python3 ma[manage.py](backend%2Fmanage.py)nage.py collectstatic
 
 Далее проверте, где статик файлы ожидает увидеть nginx и Djangо
 
