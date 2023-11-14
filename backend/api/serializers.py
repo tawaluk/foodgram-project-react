@@ -231,10 +231,7 @@ class RecipeWriteSerializer(ModelSerializer):
     @transaction.atomic
     def create_ingredients(self, ingredients, recipe):
         ingredient_ids = [element["id"] for element in ingredients]
-        existing_ingredients = Ingredient.objects.filter(pk__in=ingredient_ids)
-        existing_ingredient_ids = set(
-            existing_ingredients.values_list("pk", flat=True)
-        )
+        existing_ingredient_ids = set(ingredient_ids)
         if len(existing_ingredient_ids) != len(ingredient_ids):
             raise ValidationError("Некоторые ингредиенты не существуют!")
         ingredients_to_create = []
