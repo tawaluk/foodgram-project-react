@@ -292,8 +292,6 @@ class RecipeWriteSerializer(ModelSerializer):
         """Если опять не так, то пажалуйста объясни,
         я отказался от избыточных запросов, но отказаться от
         строчек с тэгом и ингредиентом не могу,
-        т.к. без переопределения update()
-        или переписывания tags_and_ingredients_set,
          это не получается сделать/не знаю как."""
         tags = validated_data.pop("tags")
         ingredients = validated_data.pop("ingredients")
@@ -323,7 +321,10 @@ class RecipeShortSerializer(ModelSerializer):
 
 class SubscribeFoodgramSerializer(ReadUserFoodgramSerializer):
 
-    recipes_count = SerializerMethodField()
+    recipes_count = IntegerField(
+        source='recipe.count',
+        read_only=True
+    )
     recipes = SerializerMethodField()
 
     class Meta(ReadUserFoodgramSerializer.Meta):
@@ -346,10 +347,6 @@ class SubscribeFoodgramSerializer(ReadUserFoodgramSerializer):
                 code=status.HTTP_400_BAD_REQUEST
             )
         return data
-
-    @staticmethod
-    def get_recipes_count(author):
-        return author.recipes.count()
 
     def get_recipes(self, author):
         request = self.context.get("request")
