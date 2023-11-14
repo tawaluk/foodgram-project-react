@@ -296,6 +296,7 @@ class RecipeWriteSerializer(ModelSerializer):
             recipe=instance,
             ingredient__in=instance.ingredients.all()).delete()
         self.tags_and_ingredients_set(instance, tags, ingredients)
+        instance.save()
         return instance
 
     def to_representation(self, instance):
