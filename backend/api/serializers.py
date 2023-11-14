@@ -289,17 +289,8 @@ class RecipeWriteSerializer(ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        instance.image = validated_data.get("image", instance.image)
-        instance.name = validated_data.get("name", instance.name)
-        instance.text = validated_data.get("text", instance.text)
-        tags = validated_data.pop("tags")
-        ingredients = validated_data.pop("ingredients")
         instance = super().update(instance, validated_data)
-        IngredientInRecipe.objects.filter(
-            recipe=instance,
-            ingredient__in=instance.ingredients.all()
-        ).delete()
-        self.tags_and_ingredients_set(instance, tags, ingredients)
+        self.tags_and_ingredients_set(instance)
         return instance
 
     def to_representation(self, instance):
