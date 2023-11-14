@@ -18,6 +18,7 @@ from .serializers import (FallowFoodgramSerializer, IngredientSerializer,
                           ReadRecipeSerializer, ReadUserFoodgramSerializer,
                           RecipeShortSerializer, RecipeWriteSerializer,
                           ShoppingCartSerializer, TagSerializer)
+from .utils import ShoppingCartService
 
 
 class TagsViewSet(viewsets.ReadOnlyModelViewSet):
@@ -133,9 +134,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated],
     )
     def download_shopping_cart(self, request):
-        shopping_cart = ShoppingCartSerializer()
-        get_shopping_cart = shopping_cart.download_shopping_cart(request.user)
-        return get_shopping_cart
+        user = request.user
+        shopping_cart_service = ShoppingCartService()
+        response = shopping_cart_service.download_shopping_cart(user)
+        return response
 
 
 class CustomUserViewSet(UserViewSet):
