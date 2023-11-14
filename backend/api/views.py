@@ -17,7 +17,7 @@ from .permissions import SAFE_METHODS, AuthorOrStaffOrReadOnly
 from .serializers import (FallowFoodgramSerializer, IngredientSerializer,
                           ReadRecipeSerializer, ReadUserFoodgramSerializer,
                           RecipeShortSerializer, RecipeWriteSerializer,
-                          ShoppingCartSerializer, TagSerializer)
+                          TagSerializer)
 from .utils import ShoppingCartService
 
 
