@@ -276,7 +276,6 @@ class RecipeWriteSerializer(ModelSerializer):
             )
             recipe.ingredients.add(ing.id)
 
-    @transaction.atomic
     def tags_and_ingredients_set(self, recipe, tags, ingredients):
         recipe.tags.set(tags)
         IngredientInRecipe.objects.bulk_create(
@@ -289,8 +288,10 @@ class RecipeWriteSerializer(ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
+        tags = validated_data.pop("tags")
+        ingredients = validated_data.pop("ingredients")
         instance = super().update(instance, validated_data)
-        self.tags_and_ingredients_set(instance)
+        self.tags_and_ingredients_set(instance, tags, ingredients)
         return instance
 
     def to_representation(self, instance):
