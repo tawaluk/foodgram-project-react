@@ -100,8 +100,7 @@ class IngredientInRecipeWriteSerializer(ModelSerializer):
             "id", "amount",
         )
 
-    @staticmethod
-    def validate_amount(value):
+    def validate_amount(self, value):
         if value < 1:
             raise ValidationError(
                 "Количество ингредиента должно быть больше 1")
