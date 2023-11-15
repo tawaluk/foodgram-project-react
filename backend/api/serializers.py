@@ -199,14 +199,11 @@ class RecipeWriteSerializer(ModelSerializer):
         return cooking_time
 
     def validate_ingredients(self, ingredients):
-        if not ingredients:
-            raise ValidationError("Нет ингредиентов!")
-
         ingredient_ids = set()
         for ingredient in ingredients:
             ingredient_id = ingredient["id"]
             if ingredient_id in ingredient_ids:
-                raise ValidationError(f"Ингредиент {ingredient_id} уже существует")
+                raise ValidationError(f"Ингредиенты повторяются")
             ingredient_ids.add(ingredient_id)
             if ingredient["amount"] <= 0:
                 raise ValidationError(f"Количество ингредиента {ingredient_id} должно быть больше 0")
