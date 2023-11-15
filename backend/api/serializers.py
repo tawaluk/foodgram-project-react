@@ -194,25 +194,15 @@ class RecipeWriteSerializer(ModelSerializer):
         return attrs
 
     def validate_ingredients(self, ingredients):
-        """Переписываю валидацию, чтобы выполнить замечания
-        и сделать код чище."""
-
-        if not ingredients:  # проверяю, есть ли обьект вообще
-            raise ValidationError(
-                "Нельзя создать рецепт без ингредиентов"
-            )
-        ingredient_bank = []
+        ingredient_ids = set()
         for ingredient in ingredients:
-            if ingredient in ingredient_bank:  # проверка на повтор
-                raise ValidationError(
-                    f"Ингредиент {ingredient} уже сущеcтвует!"
-                )
-            if (ingredient['amount']) <= 0:  # проверка на колличество
-                raise ValidationError(
-                    f"Колличество {ingredient} должно быть больше 0!"
-                )
+            ingredient_id = ingredient["id"]
+            if ingredient_id in ingredient_ids:
+                raise ValidationError(f"Ингредиент {ingredient_id} уже существует")
+            ingredient_ids.add(ingredient_id)
+            if ingredient["amount"] <= 0:
+                raise ValidationError(f"Количество ингредиента {ingredient_id} должно быть больше 0")
         return ingredients
-
     def validate_tags(self, tags):
         tag_ids = set()
         for tag in tags:
