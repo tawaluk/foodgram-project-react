@@ -189,7 +189,7 @@ class RecipeWriteSerializer(ModelSerializer):
             raise ValidationError("Нельзя создать рецепт без ингредиентов")
         if not attrs.get("tags"):
             raise ValidationError("Нельзя создать рецепт без тегов")
-        if attrs.get("cooking_time") and attrs["cooking_time"] < 1:
+        if attrs.get("cooking_time") and attrs["cooking_time"] > 0:
             raise ValidationError("Время приготовления должно быть больше 0")
         return attrs
 
