@@ -219,6 +219,13 @@ class RecipeWriteSerializer(ModelSerializer):
             })
         return value
 
+    def validate(self, attrs):
+        ingredient_id_list = [item["id"] for item in attrs.get("ingredients")]
+        unique_ingredient_id_list = set(ingredient_id_list)
+        if len(ingredient_id_list) != len(unique_ingredient_id_list):
+            raise ValidationError("Ингредиенты должны быть уникальны.")
+        return attrs
+
     @transaction.atomic
     def create_ingredients(self, ingredients, recipe):
         """Убрал лишнее, переписал красивее."""
@@ -247,25 +254,15 @@ class RecipeWriteSerializer(ModelSerializer):
         recipe.tags.set(tags)
         return recipe
 
-    @staticmethod
-    def tags_and_ingredients_set(recipe, tags, ingredients):
-        recipe.tags.set(tags)
-        IngredientInRecipe.objects.bulk_create(
-            [IngredientInRecipe(
-                recipe=recipe,
-                ingredient=Ingredient.objects.get(pk=ingredient["id"]),
-                amount=ingredient["amount"]
-            ) for ingredient in ingredients]
-        )
-
     @transaction.atomic
     def update(self, instance, validated_data):
-
         tags = validated_data.pop("tags")
         ingredients = validated_data.pop("ingredients")
         instance = super().update(instance, validated_data)
         instance.ingredients.clear()
-        self.tags_and_ingredients_set(instance, tags, ingredients)
+        instance.tags.clear()
+        instance.tags.set(tags)
+        self.create_ingredients(ingredients=ingredients, recipe=instance)
         return instance
 
     def to_representation(self, instance):
