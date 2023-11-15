@@ -140,4 +140,20 @@ frontend
 
     tawaluk@yandex.ru
 
+## Reviews
+
+Host:
+
+    workexampletavalyuk2.ru
+
+    51.250.101.224
+
+
+
+Админ:
+
+    почта/логин - admin@admin.ru
+    пароль - 1admintest
+
+
 
