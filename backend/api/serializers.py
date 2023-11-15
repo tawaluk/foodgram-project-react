@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
+from rest_framework.validators import ValidationError as For_one
 from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import (ImageField, ModelSerializer,
@@ -201,9 +202,10 @@ class RecipeWriteSerializer(ModelSerializer):
     def validate_ingredients(self, ingredients):
         ids = [item['id'] for item in ingredients]
         if len(ids) != len(set(ids)):
-            raise ValidationError(
-                'Ингредиенты в рецепте должны быть уникальными!'
-            )
+            raise For_one({
+                'Ингредиенты в рецепте, должны быть уникальные!'},
+                status=status.HTTP_400_BAD_REQUEST)
+
         for ingredient in ingredients:
             if ingredient["amount"] <= 0:
                 raise ValidationError(
