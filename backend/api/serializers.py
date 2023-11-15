@@ -6,6 +6,7 @@ from django.db import transaction
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from rest_framework.response import Response
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -202,9 +203,8 @@ class RecipeWriteSerializer(ModelSerializer):
     def validate_ingredients(self, ingredients):
         ids = [item['id'] for item in ingredients]
         if len(ids) != len(set(ids)):
-            raise For_one({
-                'Ингредиенты в рецепте, должны быть уникальные!'},
-                status=status.HTTP_400_BAD_REQUEST)
+            return Response({"errors": "Ингредиенты повторяются!"},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         for ingredient in ingredients:
             if ingredient["amount"] <= 0:
