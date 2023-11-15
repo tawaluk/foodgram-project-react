@@ -97,6 +97,14 @@ class IngredientInRecipeWriteSerializer(ModelSerializer):
             "id", "amount",
         )
 
+    def validate(self, attrs):
+        """Валидируем отрицательные значения."""
+        if attrs < 1:
+            raise ValidationError(
+                "Колличество ингредиента должно быть больше 0!"
+            )
+        return attrs
+
 
 class ReadIngredientsInRecipeSerializer(ModelSerializer):
     """"Чтение обьектов из модели через API."""
@@ -288,10 +296,6 @@ class RecipeWriteSerializer(ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        """Если опять не так, то пажалуйста объясни,
-        я отказался от избыточных запросов, но отказаться от
-        строчек с тэгом и ингредиентом не могу,
-         это не получается сделать/не знаю как."""
         tags = validated_data.pop("tags")
         ingredients = validated_data.pop("ingredients")
         instance = super().update(instance, validated_data)
