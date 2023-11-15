@@ -199,14 +199,16 @@ class RecipeWriteSerializer(ModelSerializer):
         return cooking_time
 
     def validate_ingredients(self, ingredients):
-        ingredient_ids = set()
+        ids = [item['id'] for item in ingredients]
+        if len(ids) != len(set(ids)):
+            raise ValidationError(
+                'Ингредиенты в рецепте должны быть уникальными!'
+            )
         for ingredient in ingredients:
-            ingredient_id = ingredient["id"]
-            if ingredient_id in ingredient_ids:
-                raise ValidationError("Ингредиенты повторяются")
-            ingredient_ids.add(ingredient_id)
             if ingredient["amount"] <= 0:
-                raise ValidationError(f"Количество ингредиента {ingredient_id} должно быть больше 0")
+                raise ValidationError(
+                    f"Количество ингредиента {ingredient.name} должно быть больше 0"
+                )
         return ingredients
 
     def validate_tags(self, tags):
