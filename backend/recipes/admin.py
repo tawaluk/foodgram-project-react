@@ -74,4 +74,4 @@ class TagInRecipeAdmin(ModelAdmin):
     в админке.
     Админ может редактировать теги в рецептах."""
 
-    list_display = ("pk", "tag", "recip")
+    list_display = ("pk", "tag", "recipe")
