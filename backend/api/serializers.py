@@ -107,7 +107,9 @@ class ReadIngredientsInRecipeSerializer(ModelSerializer):
     """"Чтение обьектов из модели через API."""
 
     id = ReadOnlyField(read_only=True, source="ingredient.id")
-    name = ReadOnlyField(read_only=True, source="ingredient.name")
+    name = ReadOnlyField(
+        read_only=True, source="ingredient.name"
+    )
     measurement_unit = ReadOnlyField(
         read_only=True,
         source="ingredient.measurement_unit"
