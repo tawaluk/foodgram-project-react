@@ -213,6 +213,15 @@ class RecipeWriteSerializer(ModelSerializer):
                 )
         return ingredients
 
+    def validate_tags(self, tags):
+        tag_ids = set()
+        for tag in tags:
+            tag_id = tag.id
+            if tag_id in tag_ids:
+                raise ValidationError(f"Тег {tag_id} уже существует")
+            tag_ids.add(tag_id)
+        return tags
+
     def create_ingredients(self, ingredients, recipe):
         ingredient_create = []
         for ingredient in ingredients:
