@@ -108,7 +108,7 @@ class Recipe(models.Model):
         verbose_name="время приговления по рецепту в минутах",
         help_text="введите время приговления по рецепту в минутах",
         default=1,
-        validators=[MinValueTimeCookingValidator(limit_value=1),],
+        validators=[MinValueTimeCookingValidator(limit_value=1)],
     )
 
     class Meta:

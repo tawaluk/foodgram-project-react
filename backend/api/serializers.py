@@ -11,7 +11,7 @@ from rest_framework.serializers import (ImageField, ModelSerializer,
                                         ReadOnlyField)
 
 from recipes.models import (
-    Ingredient, IngredientInRecipe, Recipe, ShopCart, Tag
+    Ingredient, IngredientInRecipe, Recipe, Tag
 )
 from users.models import Fallow, UserFoodgram
 
@@ -201,10 +201,14 @@ class RecipeWriteSerializer(ModelSerializer):
         for ingredient in ingredients:
             ingredient_id = ingredient["id"]
             if ingredient_id in ingredient_ids:
-                raise ValidationError(f"Ингредиент {ingredient_id} уже существует")
+                raise ValidationError(
+                    f"Ингредиент {ingredient_id} уже существует"
+                )
             ingredient_ids.add(ingredient_id)
             if ingredient["amount"] <= 0:
-                raise ValidationError(f"Количество ингредиента {ingredient_id} должно быть больше 0")
+                raise ValidationError(
+                    f"Количество ингредиента {ingredient_id} должно быть больше 0"
+                )
         return ingredients
 
     def validate_tags(self, tags):
@@ -220,7 +224,8 @@ class RecipeWriteSerializer(ModelSerializer):
         ingredient_create = []
         for ingredient in ingredients:
             ingredient_obj = ingredient["id"]
-            ingredient_id = ingredient_obj.id if isinstance(ingredient_obj, Ingredient) else ingredient_obj
+            ingredient_id = ingredient_obj.id if isinstance(
+                ingredient_obj, Ingredient) else ingredient_obj
             ingredient_amount = ingredient["amount"]
             ingredient_create.append(
                 IngredientInRecipe(
