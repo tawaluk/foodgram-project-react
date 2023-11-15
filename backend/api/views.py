@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
+from recipes.models import Favorites, Ingredient, Recipe, ShopCart, Tag
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
@@ -8,9 +9,7 @@ from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
-from recipes.models import Favorites, Ingredient, Recipe, ShopCart, Tag
 from users.models import Fallow, UserFoodgram
-
 from .filters import IngredientFilter, RecipeFilter
 from .paginators import CustomPagination
 from .permissions import SAFE_METHODS, AuthorOrStaffOrReadOnly
@@ -99,8 +98,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @staticmethod
     def add_to_target(model, user, pk):
         if model.objects.filter(user=user, recipe__id=pk).exists():
-            return Response({"errors": "Рецепт уже добавлен!"},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                data={"errors": "Рецепт уже добавлен!"},
+                status=status.HTTP_400_BAD_REQUEST)
         try:
             recipe = Recipe.objects.get(id=pk)
         except Recipe.DoesNotExist:
@@ -125,8 +125,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if obj.exists():
             obj.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response({"errors": "Рецепт не существует!"},
-                        status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            data={"errors": "Рецепт не существует!"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     @action(
         detail=False,
@@ -177,8 +179,10 @@ class CustomUserViewSet(UserViewSet):
             if subscription.exists():
                 subscription.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response({"errors": "Такой подписки не существует!"},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                data={"errors": "Такой подписки не существует!"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     @action(
         detail=False,

@@ -1,10 +1,8 @@
 from django.db import models
 
 from users.models import UserFoodgram
-
 from .validators import (MinValueAmountIngridient,
-                         MinValueTimeCookingValidator, color_hex_validator,
-                         min_long_name_validator)
+                         MinValueTimeCookingValidator, color_hex_validator)
 
 
 class Ingredient(models.Model):
@@ -22,6 +20,7 @@ class Ingredient(models.Model):
 
     class Meta:
         """Метамодель для модели Ingridient."""
+
         verbose_name = "Ингридиент"
         verbose_name_plural = "Ингридиенты"
         ordering = ["-name", ]

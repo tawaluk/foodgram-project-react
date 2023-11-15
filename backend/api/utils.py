@@ -7,6 +7,7 @@ from recipes.models import IngredientInRecipe
 
 
 class ShoppingCartService:
+
     @staticmethod
     def download_shopping_cart(user):
         ingredients = IngredientInRecipe.objects.filter(
@@ -20,7 +21,7 @@ class ShoppingCartService:
             f"Список покупок: {user.get_full_name()}\n\n"
             f"Дата: {today:%Y-%m-%d}\n\n"
         )
-        shopping_list += '\n'.join([
+        shopping_list += "\n".join([
             f"- {ingredient['ingredient__name']} "
             f"({ingredient['ingredient__measurement_unit']})"
             f" - {ingredient['amount']}"

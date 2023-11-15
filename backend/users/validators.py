@@ -8,5 +8,5 @@ def validate_name(value):
         raise ValidationError("Имя не может быть пустым")
 
     if not re.match(r'^[\w.@+-]+$', value):
-        raise ValidationError("Некорректное имя")
+        raise ValidationError('Некорректное имя')
     return value

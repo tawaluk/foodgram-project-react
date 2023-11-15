@@ -1,23 +1,17 @@
 import base64
-import datetime
 
 from django.core.files.base import ContentFile
 from django.db import transaction
-from django.db.models import Sum
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
 from djoser.serializers import UserCreateSerializer, UserSerializer
+from recipes.models import (Ingredient, IngredientInRecipe, Recipe, ShopCart,
+                            Tag)
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
-from rest_framework.validators import ValidationError as For_one
 from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import (ImageField, ModelSerializer,
                                         ReadOnlyField)
 
-from recipes.models import (Ingredient, IngredientInRecipe, Recipe, ShopCart,
-                            Tag)
 from users.models import Fallow, UserFoodgram
 
 
@@ -196,21 +190,21 @@ class RecipeWriteSerializer(ModelSerializer):
     def validate_cooking_time(self, cooking_time):
         if cooking_time <= 0:
             raise ValidationError(
-                'Время приготовления должно быть больше нуля!'
+                "Время приготовления должно быть больше нуля!"
             )
         return cooking_time
 
     def validate_ingredients(self, ingredients):
-        ids = [item['id'] for item in ingredients]
-        if len(ids) != len(set(ids)):
-            return Response({"errors": "Ингредиенты повторяются!"},
-                            status=status.HTTP_400_BAD_REQUEST)
-
+        if not ingredients:
+            raise ValidationError("Нет ингредиентов!")
+        ingredient_ids = set()
         for ingredient in ingredients:
+            ingredient_id = ingredient["id"]
+            if ingredient_id in ingredient_ids:
+                raise ValidationError(f"Ингредиент {ingredient_id} уже существует")
+            ingredient_ids.add(ingredient_id)
             if ingredient["amount"] <= 0:
-                raise ValidationError(
-                    f"Количество ингредиента {ingredient.name} должно быть больше 0"
-                )
+                raise ValidationError(f"Количество ингредиента {ingredient_id} должно быть больше 0")
         return ingredients
 
     def validate_tags(self, tags):
@@ -238,7 +232,6 @@ class RecipeWriteSerializer(ModelSerializer):
         IngredientInRecipe.objects.bulk_create(ingredient_create)
 
     def create(self, validated_data):
-        """Метод создания модели."""
         ingredients = validated_data.pop("ingredients")
         user = self.context.get("request").user
         tags = validated_data.pop("tags")
@@ -281,7 +274,7 @@ class RecipeShortSerializer(ModelSerializer):
 class SubscribeFoodgramSerializer(ReadUserFoodgramSerializer):
 
     recipes_count = IntegerField(
-        source='recipe.count',
+        source="recipe.count",
         read_only=True
     )
     recipes = SerializerMethodField()
