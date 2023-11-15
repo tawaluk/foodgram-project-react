@@ -207,23 +207,25 @@ class RecipeWriteSerializer(ModelSerializer):
         return ingredients
 
     @staticmethod
-    def validate_tags(value):
-        if not value:
-            raise ValidationError({
-                "tags': 'Нельзя создать рецепт без тега"
-            })
-        tags_set = set(value)
-        if len(value) != len(tags_set):
-            raise ValidationError({
-                "tags": "Теги должны быть уникальными!"
-            })
-        return value
+ #  def validate_tags(value):
+ #      if not value:
+ #          raise ValidationError({
+ #              "tags': 'Нельзя создать рецепт без тега"
+ #          })
+ #      tags_set = set(value)
+ #      if len(value) != len(tags_set):
+ #          raise ValidationError({
+ #              "tags": "Теги должны быть уникальными!"
+ #          })
+ #      return value
 
     def validate(self, attrs):
         ingredient_id_list = [item["id"] for item in attrs.get("ingredients")]
         unique_ingredient_id_list = set(ingredient_id_list)
         if len(ingredient_id_list) != len(unique_ingredient_id_list):
             raise ValidationError("Ингредиенты должны быть уникальны.")
+
+
         return attrs
 
     @transaction.atomic
