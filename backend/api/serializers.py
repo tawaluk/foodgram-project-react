@@ -88,14 +88,22 @@ class IngredientSerializer(ModelSerializer):
 
 class IngredientInRecipeWriteSerializer(ModelSerializer):
 
-    id = IntegerField()
-    amount = IntegerField()
+    id = PrimaryKeyRelatedField(
+        queryset=Ingredient.objects.all()
+    )
 
     class Meta:
         model = IngredientInRecipe
         fields = (
             "id", "amount",
         )
+
+    @staticmethod
+    def validate_amount(value):
+        if value < 1:
+            raise ValidationError(
+                "Количество ингредиента должно быть больше 1")
+        return value
 
 
 class ReadIngredientsInRecipeSerializer(ModelSerializer):
