@@ -87,9 +87,10 @@ class IngredientSerializer(ModelSerializer):
 
 
 class IngredientInRecipeWriteSerializer(ModelSerializer):
+    """Внес изменения в логику проверки существования id."""
 
     id = PrimaryKeyRelatedField(
-        queryset=Ingredient.objects.all()
+        queryset=Ingredient.objects.all(),
     )
 
     class Meta:
@@ -184,49 +185,32 @@ class RecipeWriteSerializer(ModelSerializer):
         )
 
     # flake8: noqa: C901
-    def validate(
-            # flake8: noqa: C901
-            self, obj):
-        ingredients_list = []
-        required_fields = ["name", "text", "cooking_time"]
-        for field in required_fields:
-            if not obj.get(field):
-                raise ValidationError(f"{field} - Обязательное поле.")
-        if not obj.get("tags"):
-            raise ValidationError("Нужно указать минимум 1 тег.")
-        if not obj.get("ingredients"):
-            raise ValidationError("Нужно указать минимум 1 ингредиент.")
+    @staticmethod
+    def validate_ingredients(ingredients):
+        """Переписываю валидацию, чтобы выполнить замечания
+        и сделать код чище."""
 
-        ingredient_id_list = [item["id"] for item in obj.get("ingredients")]
-        unique_ingredient_id_list = set(ingredient_id_list)
-
-        if len(ingredient_id_list) != len(unique_ingredient_id_list):
-            raise ValidationError("Ингредиенты должны быть уникальны.")
-        for item in obj.get("ingredients"):
-            ingredient_id = item["id"]
-            ingredient_amount = int(item["amount"])
-            try:
-                ingredient = Ingredient.objects.get(id=ingredient_id)
-            except Ingredient.DoesNotExist:
+        if not ingredients:  # проверяю, есть ли обьект вообще
+            raise ValidationError(
+                "Нельзя создать рецепт без ингредиентов"
+            )
+        ingredient_bank = []
+        for ingredient in ingredients:
+            if ingredient in ingredient_bank:  # проверка на повтор
                 raise ValidationError(
-                    f"Ингредиент с id {ingredient_id} не существует!"
+                    f"Ингредиент {ingredient} уже сущеcтвует!"
                 )
-            if ingredient in ingredients_list:
+            if (ingredient['amount']) <= 0:  # проверка на колличество
                 raise ValidationError(
-                    f"Ингредиент {ingredient} не должен повторяться!"
+                    f"Колличество {ingredient} должно быть больше 0!"
                 )
-            if ingredient_amount <= 0:
-                raise ValidationError(
-                    f"Ингредиента {ingredient} должно быть больше 0!"
-                )
-            ingredients_list.append(ingredient)
-        return obj
+        return ingredients
 
     @staticmethod
     def validate_tags(value):
         if not value:
             raise ValidationError({
-                "tags': 'Нужно выбрать хотя бы один тег!"
+                "tags': 'Нельзя создать рецепт без тега"
             })
         tags_set = set(value)
         if len(value) != len(tags_set):
@@ -237,29 +221,20 @@ class RecipeWriteSerializer(ModelSerializer):
 
     @transaction.atomic
     def create_ingredients(self, ingredients, recipe):
-        ingredient_ids = [element["id"] for element in ingredients]
-        existing_ingredient_ids = set(ingredient_ids)
-        if len(existing_ingredient_ids) != len(ingredient_ids):
-            raise ValidationError("Некоторые ингредиенты не существуют!")
-        ingredients_to_create = []
-        for element in ingredients:
-            ingredient_id = element["id"]
-            amount = element["amount"]
-            if ingredient_id not in existing_ingredient_ids:
-                raise ValidationError(
-                    f"Ингредиент с id {ingredient_id} не существует!"
-                )
-            ingredients_to_create.append(
+        """Убрал лишнее, переписал красивее."""
+
+        ingredient_create = []
+        for ingredient in ingredients:
+
+            ingredient_id = ingredient['id']
+            ingredient_amount = ingredient['amount']
+            ingredient_create.append(
                 IngredientInRecipe(
-                    ingredient_id=ingredient_id, recipe=recipe, amount=amount
+                    ingredient_id=ingredient_id,
+                    amount=ingredient_amount,
+                    recipe=recipe
                 )
             )
-        IngredientInRecipe.objects.bulk_create(ingredients_to_create)
-
-    @staticmethod
-    def create_tags(tags, recipe):
-        """Метод добавления тега."""
-        recipe.tags.set(tags)
 
     def create(self, validated_data):
         """Метод создания модели."""
@@ -269,7 +244,7 @@ class RecipeWriteSerializer(ModelSerializer):
 
         recipe = Recipe.objects.create(**validated_data, author=user)
         self.create_ingredients(ingredients, recipe)
-        self.create_tags(tags, recipe)
+        recipe.tags.set(tags)
         return recipe
 
     @staticmethod

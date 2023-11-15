@@ -23,7 +23,6 @@ def min_long_name_validator(value):
 class MinValueTimeCookingValidator(MinValueValidator):
     """Валидатор корректности вводимого значения времени
      приготовления в рецепте."""
-
     message = "не менее 1 минуты!"
 
 

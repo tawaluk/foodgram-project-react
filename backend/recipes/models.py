@@ -1,7 +1,7 @@
 from django.db import models
 
 from users.models import UserFoodgram
-from .validators import (MinValueAmountIngridient,
+from .validators import (MinValueAmountIngridient, min_long_name_validator,
                          MinValueTimeCookingValidator, color_hex_validator)
 
 
@@ -25,7 +25,7 @@ class Ingredient(models.Model):
         ordering = ["-name", ]
 
     def __str__(self) -> str:
-        return f"{self.name}, {self.measurement_unit}"
+        return f"{self.id}, {self.name}, {self.measurement_unit}"
 
 
 class Tag(models.Model):
@@ -107,9 +107,7 @@ class Recipe(models.Model):
         verbose_name="время приговления по рецепту в минутах",
         help_text="введите время приговления по рецепту в минутах",
         default=1,
-        validators=[MinValueTimeCookingValidator(
-            limit_value=1
-        )],
+        validators=[MinValueTimeCookingValidator(limit_value=1),],
     )
 
     class Meta:

@@ -11,10 +11,12 @@ SECRET_KEY = os.getenv(
     default='django-insecure-a2o85^^_u*w%6v8jlscory(xx)(mc=68ax)$)kdqs0cdn7uvnd')
 
 DEBUG = os.getenv('DEBUG', default='False') == 'True'
-
 CSRF_TRUSTED_ORIGINS = ['https://workexampletavalyuk.ru']
-
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(' ')
+
+#DEBUG = True
+
+#ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'users.UserFoodgram'
 INSTALLED_APPS = [
@@ -66,6 +68,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
+
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#    }
+#}
 
 DATABASES = {
     'default': {
