@@ -97,14 +97,6 @@ class IngredientInRecipeWriteSerializer(ModelSerializer):
             "id", "amount",
         )
 
-    def validate(self, attrs):
-        """Валидируем отрицательные значения."""
-        if attrs < 1:
-            raise ValidationError(
-                "Колличество ингредиента должно быть больше 0!"
-            )
-        return attrs
-
 
 class ReadIngredientsInRecipeSerializer(ModelSerializer):
     """"Чтение обьектов из модели через API."""
@@ -185,6 +177,7 @@ class RecipeWriteSerializer(ModelSerializer):
 
     # flake8: noqa: C901
     def validate(
+            # flake8: noqa: C901
             self, obj):
         ingredients_list = []
         required_fields = ["name", "text", "cooking_time"]
@@ -225,7 +218,7 @@ class RecipeWriteSerializer(ModelSerializer):
     def validate_tags(value):
         if not value:
             raise ValidationError({
-                "tags": "Нужно выбрать хотя бы один тег!"
+                "tags': 'Нужно выбрать хотя бы один тег!"
             })
         tags_set = set(value)
         if len(value) != len(tags_set):
@@ -295,6 +288,7 @@ class RecipeWriteSerializer(ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
+
         tags = validated_data.pop("tags")
         ingredients = validated_data.pop("ingredients")
         instance = super().update(instance, validated_data)
