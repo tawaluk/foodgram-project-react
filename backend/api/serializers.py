@@ -166,7 +166,7 @@ class ReadRecipeSerializer(ModelSerializer):
 class RecipeWriteSerializer(ModelSerializer):
 
     tags = PrimaryKeyRelatedField(queryset=Tag.objects.all(), many=True)
-    ingredients = IngredientInRecipeWriteSerializer(many=True)
+    ingredients = IngredientInRecipeWriteSerializer(many=True, required=True)
     image = Base64ImageField()
     cooking_time = IntegerField()
 
