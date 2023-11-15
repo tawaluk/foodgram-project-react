@@ -184,9 +184,16 @@ class RecipeWriteSerializer(ModelSerializer):
             "cooking_time",
         )
 
-    # flake8: noqa: C901
-    @staticmethod
-    def validate_ingredients(ingredients):
+    def validate(self, attrs):
+        if not attrs.get("ingredients"):
+            raise ValidationError("Нельзя создать рецепт без ингредиентов")
+        if not attrs.get("tags"):
+            raise ValidationError("Нельзя создать рецепт без тегов")
+        if attrs.get("cooking_time") and attrs["cooking_time"] < 1:
+            raise ValidationError("Время приготовления должно быть больше 0")
+        return attrs
+
+    def validate_ingredients(self, ingredients):
         """Переписываю валидацию, чтобы выполнить замечания
         и сделать код чище."""
 
@@ -206,36 +213,11 @@ class RecipeWriteSerializer(ModelSerializer):
                 )
         return ingredients
 
-    @staticmethod
- #  def validate_tags(value):
- #      if not value:
- #          raise ValidationError({
- #              "tags': 'Нельзя создать рецепт без тега"
- #          })
- #      tags_set = set(value)
- #      if len(value) != len(tags_set):
- #          raise ValidationError({
- #              "tags": "Теги должны быть уникальными!"
- #          })
- #      return value
-
-    def validate(self, attrs):
-        ingredient_id_list = [item["id"] for item in attrs.get("ingredients")]
-        unique_ingredient_id_list = set(ingredient_id_list)
-        if len(ingredient_id_list) != len(unique_ingredient_id_list):
-            raise ValidationError("Ингредиенты должны быть уникальны.")
-
-
-        return attrs
-
-    @transaction.atomic
     def create_ingredients(self, ingredients, recipe):
-        """Убрал лишнее, переписал красивее."""
-
         ingredient_create = []
         for ingredient in ingredients:
-
-            ingredient_id = ingredient['id']
+            ingredient_obj = ingredient['id']
+            ingredient_id = ingredient_obj.id if isinstance(ingredient_obj, Ingredient) else ingredient_obj
             ingredient_amount = ingredient['amount']
             ingredient_create.append(
                 IngredientInRecipe(
@@ -244,14 +226,15 @@ class RecipeWriteSerializer(ModelSerializer):
                     recipe=recipe
                 )
             )
+        IngredientInRecipe.objects.bulk_create(ingredient_create)
 
     def create(self, validated_data):
         """Метод создания модели."""
         ingredients = validated_data.pop("ingredients")
         user = self.context.get("request").user
         tags = validated_data.pop("tags")
-
         recipe = Recipe.objects.create(**validated_data, author=user)
+        recipe.save()
         self.create_ingredients(ingredients, recipe)
         recipe.tags.set(tags)
         return recipe
