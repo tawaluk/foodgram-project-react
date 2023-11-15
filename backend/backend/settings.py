@@ -17,6 +17,7 @@ CSRF_TRUSTED_ORIGINS = ['https://workexampletavalyuk.ru']
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(' ')
 
 AUTH_USER_MODEL = 'users.UserFoodgram'
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
