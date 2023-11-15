@@ -71,7 +71,7 @@ class IngredientInRecipeAdmin(ModelAdmin):
 @register(TagInRecipe)
 class TagInRecipeAdmin(ModelAdmin):
     """Настройка полей модели TagInRecipe
-        в админке.
-        Админ может редактировать теги в рецептах.
-        """
+    в админке.
+    Админ может редактировать теги в рецептах."""
+
     list_display = ('pk', 'tag', 'recipe')

@@ -3,7 +3,7 @@ from rest_framework.permissions import (SAFE_METHODS, BasePermission,
 
 
 class AuthorOrStaffOrReadOnly(BasePermission):
-    """Если не админ или не автор, то только чтение"""
+    """Если не админ или не автор, то только чтение."""
 
     def has_permission(self, request, view):
         return (request.method in SAFE_METHODS
@@ -11,7 +11,7 @@ class AuthorOrStaffOrReadOnly(BasePermission):
 
 
 class AdminOrReadOnly(IsAdminUser):
-    """Если не админ, то только чтение"""
+    """Если не админ, то только чтение."""
 
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_staff)
