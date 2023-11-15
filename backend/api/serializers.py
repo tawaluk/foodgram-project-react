@@ -189,7 +189,7 @@ class RecipeWriteSerializer(ModelSerializer):
             raise ValidationError("Нельзя создать рецепт без ингредиентов")
         if not attrs.get("tags"):
             raise ValidationError("Нельзя создать рецепт без тегов")
-        if attrs.get("cooking_time") and attrs["cooking_time"] < 1:
+        if attrs.get("cooking_time") and attrs["cooking_time"] <= 0:
             raise ValidationError("Время приготовления должно быть больше 0")
         return attrs
 
@@ -216,9 +216,9 @@ class RecipeWriteSerializer(ModelSerializer):
     def create_ingredients(self, ingredients, recipe):
         ingredient_create = []
         for ingredient in ingredients:
-            ingredient_obj = ingredient['id']
+            ingredient_obj = ingredient["id"]
             ingredient_id = ingredient_obj.id if isinstance(ingredient_obj, Ingredient) else ingredient_obj
-            ingredient_amount = ingredient['amount']
+            ingredient_amount = ingredient["amount"]
             ingredient_create.append(
                 IngredientInRecipe(
                     ingredient_id=ingredient_id,
