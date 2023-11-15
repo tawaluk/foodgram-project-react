@@ -193,6 +193,13 @@ class RecipeWriteSerializer(ModelSerializer):
             raise ValidationError("Время приготовления должно быть больше 0")
         return attrs
 
+    def validate_cooking_time(self, cooking_time):
+        if cooking_time <= 0:
+            raise ValidationError(
+                'Время приготовления должно быть больше нуля!'
+            )
+        return cooking_time
+
     def validate_ingredients(self, ingredients):
         ingredient_ids = set()
         for ingredient in ingredients:
