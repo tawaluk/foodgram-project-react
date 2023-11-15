@@ -209,7 +209,7 @@ class RecipeWriteSerializer(ModelSerializer):
             ingredient_ids.add(ingredient_id)
             if ingredient["amount"] <= 0:
                 raise ValidationError(
-                    f"Количество ингредиента {ingredient_id} должно быть больше 0"
+                    f"Ингредиента {ingredient_id} должно быть больше 0"
                 )
         return ingredients
 
