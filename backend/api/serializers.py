@@ -46,7 +46,6 @@ class ReadUserFoodgramSerializer(UserSerializer):
         return Fallow.objects.filter(user=user, author=author).exists()
 
     def to_representation(self, instance):
-        """Метод для представления сериализованных данных."""
 
         return super().to_representation(instance)
 
@@ -54,7 +53,6 @@ class ReadUserFoodgramSerializer(UserSerializer):
 class Base64ImageField(ImageField):
 
     def to_internal_value(self, data):
-
         if isinstance(data, str) and data.startswith("data:image"):
             format_value, imgstr = data.split(";base64,")
             ext = format_value.split("/")[-1]
@@ -201,8 +199,9 @@ class RecipeWriteSerializer(ModelSerializer):
                 )
             ingredient_ids.add(ingredient_id)
             if ingredient["amount"] <= 0:
-                raise serializers.ValidationError(
-                    [{"ingredients": [f"{ingredients} слишком мало!."]}])
+                raise ValidationError(
+                    f"Ингредиента {ingredient_id} слишком мало!"
+                )
         return ingredients
 
     def validate_tags(self, tags):

@@ -144,8 +144,7 @@ frontend
 
 Host:
 
-   workexampletavalyuk.ru
-
+    workexampletavalyuk.ru
 
 Админ:
 
