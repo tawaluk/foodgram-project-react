@@ -197,12 +197,12 @@ class RecipeWriteSerializer(ModelSerializer):
             ingredient_id = ingredient["id"]
             if ingredient_id in ingredient_ids:
                 raise serializers.ValidationError(
-                    f"Ингредиент {ingredient_id} уже существует"
-                )
+                    [{"ingredients": ["Ингредиенты не должны повторяться."]}]
+            )
             ingredient_ids.add(ingredient_id)
             if ingredient["amount"] <= 0:
-                raise serializers.ValidationError(
-                    [{"ingredients": ["Ингредиенты не должны повторяться."]}]
+                raise ValidationError(
+                    f"Ингредиента {ingredient_id} слишком мало!"
                 )
         return ingredients
 
