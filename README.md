@@ -144,10 +144,7 @@ frontend
 
 Host:
 
-    workexampletavalyuk2.ru
-
-    51.250.101.224
-
+   workexampletavalyuk.ru
 
 
 Админ:
