@@ -25,7 +25,6 @@ class WriteUserFoodgramCreateSerializer(UserCreateSerializer):
 
 
 class ReadUserFoodgramSerializer(UserSerializer):
-    """Чтение обьектов из модели через API."""
 
     is_subscribed = SerializerMethodField(read_only=True)
 
@@ -53,10 +52,8 @@ class ReadUserFoodgramSerializer(UserSerializer):
 
 
 class Base64ImageField(ImageField):
-    """Кодирование изображения в base64."""
 
     def to_internal_value(self, data):
-        """Метод преобразования картинки."""
 
         if isinstance(data, str) and data.startswith("data:image"):
             format_value, imgstr = data.split(";base64,")
@@ -67,7 +64,6 @@ class Base64ImageField(ImageField):
 
 
 class TagSerializer(ModelSerializer):
-    """Сериализатор для получения тегов."""
 
     class Meta:
         model = Tag
@@ -77,7 +73,6 @@ class TagSerializer(ModelSerializer):
 
 
 class IngredientSerializer(ModelSerializer):
-    """Сериализатор для получения ингридиентов."""
 
     class Meta:
         model = Ingredient
@@ -104,7 +99,6 @@ class IngredientInRecipeWriteSerializer(ModelSerializer):
 
 
 class ReadIngredientsInRecipeSerializer(ModelSerializer):
-    """"Чтение обьектов из модели через API."""
 
     id = ReadOnlyField(read_only=True, source="ingredient.id")
     name = ReadOnlyField(
@@ -121,7 +115,6 @@ class ReadIngredientsInRecipeSerializer(ModelSerializer):
 
 
 class ReadRecipeSerializer(ModelSerializer):
-    """Чтение обьектов из модели через API."""
 
     tags = TagSerializer(many=True, read_only=True)
     author = ReadUserFoodgramSerializer(read_only=True)
@@ -264,7 +257,6 @@ class RecipeWriteSerializer(ModelSerializer):
 
 
 class RecipeShortSerializer(ModelSerializer):
-    """Вспомогательный сериализатор для необходимого вывода."""
 
     image = Base64ImageField()
 
