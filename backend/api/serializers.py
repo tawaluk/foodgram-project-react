@@ -201,9 +201,8 @@ class RecipeWriteSerializer(ModelSerializer):
                 )
             ingredient_ids.add(ingredient_id)
             if ingredient["amount"] <= 0:
-                raise ValidationError(
-                    f"Ингредиента {ingredient_id} слишком мало!"
-                )
+                raise serializers.ValidationError(
+                    [{"ingredients": [f"{ingredients} слишком мало!."]}])
         return ingredients
 
     def validate_tags(self, tags):
