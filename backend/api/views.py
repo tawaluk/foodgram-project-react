@@ -21,8 +21,6 @@ from .utils import ShoppingCartService
 
 
 class TagsViewSet(viewsets.ReadOnlyModelViewSet):
-    """Вью дял тегов.
-    Через АПИ требуются только GET запросы."""
 
     queryset = Tag.objects.all()
     permission_classes = [AllowAny]
@@ -30,8 +28,6 @@ class TagsViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
-    """Вьюха дял Ingredient.
-    Через АПИ требуются только GET запросы."""
 
     queryset = Ingredient.objects.all()
     permission_classes = [AllowAny]
@@ -41,7 +37,6 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    """Вьюсет для модели рецепта."""
 
     queryset = Recipe.objects.all()
     permission_classes = [AuthorOrStaffOrReadOnly]
@@ -50,14 +45,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filterset_class = RecipeFilter
 
     def get_serializer_class(self):
-        """Роутинг сериализаторов исходя из действий."""
 
         if self.action in (SAFE_METHODS or ["retrieve", "list"]):
             return ReadRecipeSerializer
         return RecipeWriteSerializer
 
     def partial_update(self, request, *args, **kwargs):
-        """Явно переопределяю. Нужно для тестов."""
 
         instance = self.get_object()
         if instance.author != request.user:
@@ -143,7 +136,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
 
 class CustomUserViewSet(UserViewSet):
-    """Вьюсет для кастомной модели пользователя."""
 
     queryset = UserFoodgram.objects.all()
     serializer_class = ReadUserFoodgramSerializer
@@ -156,7 +148,6 @@ class CustomUserViewSet(UserViewSet):
         permission_classes=[IsAuthenticated]
     )
     def subscribe(self, request, **kwargs):
-        """Подписка и отписка от автора."""
         user = request.user
         author_id = self.kwargs.get("id")
         author = get_object_or_404(UserFoodgram, id=author_id)
@@ -189,7 +180,6 @@ class CustomUserViewSet(UserViewSet):
         permission_classes=[IsAuthenticated]
     )
     def subscriptions(self, request):
-        """Просмотр подписок на авторов."""
         user = request.user
         queryset = UserFoodgram.objects.filter(follow__user=user)
         pages = self.paginate_queryset(queryset)
