@@ -3,7 +3,7 @@ import base64
 from django.core.files.base import ContentFile
 from django.db import transaction
 from djoser.serializers import UserCreateSerializer, UserSerializer
-from rest_framework import status
+from rest_framework import status, serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
@@ -196,12 +196,12 @@ class RecipeWriteSerializer(ModelSerializer):
         for ingredient in ingredients:
             ingredient_id = ingredient["id"]
             if ingredient_id in ingredient_ids:
-                raise ValidationError(
+                raise serializers.ValidationError(
                     f"Ингредиент {ingredient_id} уже существует"
                 )
             ingredient_ids.add(ingredient_id)
             if ingredient["amount"] <= 0:
-                raise ValidationError(
+                raise serializers.ValidationError(
                     [{"ingredients": ["Ингредиенты не должны повторяться."]}]
                 )
         return ingredients
